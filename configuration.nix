@@ -11,22 +11,15 @@
 
   programs.zsh.enable = true;
   # Use the systemd-boot EFI boot loader.
-   boot.loader.systemd-boot.enable = true;
-  #boot.loader.grub = {
-  #  enable = true;
-  #  version = 2;
-  #  efiSupport = true;
-  #  device = "nodev";
-  #  useOSProber = true;
-  #};
+  boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  # networking.hostName = "nixos"; # Define your hostname.
+  networking.hostName = "Feraille"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
   networking.networkmanager.enable = true;
 
   # Set your time zone.
-   time.timeZone = "Europe/Amsterdam";
+   time.timeZone = "Europe/Paris";
 
   # The global useDHCP flag is deprecated, therefore explicitly set to false here.
   # Per-interface useDHCP will be mandatory in the future, so this generated config
@@ -40,52 +33,79 @@
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
   # Select internationalisation properties.
-  # i18n.defaultLocale = "en_US.UTF-8";
-  # console = {
-  #   font = "Lat2-Terminus16";
-  #   keyMap = "us";
-  # };
+  i18n.defaultLocale = "en_US.UTF-8";
+  console = {
+    font = "Lat2-Terminus16";
+    keyMap = "us";
+  };
 
   # Enable the X11 windowing system.
   services.xserver.enable = true;
 
 
-  # Enable the GNOME Desktop Environment.
+  # Enable the (not GNOME) Desktop Environment.
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.displayManager.defaultSession = "none+i3";
   services.xserver.windowManager.i3.enable = true;
   
 
   # Configure keymap in X11
-  # services.xserver.layout = "us";
-  # services.xserver.xkbOptions = "eurosign:e";
+  services.xserver.layout = "us";
+  services.xserver.xkbOptions = "eurosign:e";
 
   # Enable CUPS to print documents.
-  # services.printing.enable = true;
+  services.printing.enable = true;
 
   # Enable sound.
-   sound.enable = true;
-   hardware.pulseaudio.enable = true;
+  sound.enable = true;
+  hardware.pulseaudio.enable = true;
 
   # Enable bluetooth
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;
 
-
+  # Enable SSH
+  services.openssh.enable = true;
+  
   # Enable touchpad support (enabled default in most desktopManager).
-   services.xserver.libinput.enable = true;
+  services.xserver.libinput.enable = true;
+
+  environment.variables = { 
+    EDITOR = "vim";
+    PAGER = "most";
+  };
+  
+  fonts = {
+    enableDefaultFonts = true;
+    fonts = with pkgs; [
+      (nerdfonts.override { fonts = [ "FiraCode" "DroidSansMono" "Hack" ]; })
+    ];
+
+    fontconfig = {
+      hinting.enable = true;
+      defaultFonts = {
+        serif = [ "FiraCodeNerdFontComplete-Regular" ];
+        sansSerif = [ "FiraCodeNerdFontComplete-Regular" ];
+        monospace = [ "FiraCodeNerdFontCompleteM-Regular" ];
+      };
+    };
+  };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-   users.users.poustouflan = {
+  users.users.poustouflan = {
     isNormalUser = true;
     home = "/home/poustouflan";
     description = "Poustouflan";
     shell = pkgs.zsh;
-    uid = 1234;
-    extraGroups = [ "wheel" "networkmanager" "audio"];
+    uid = 2026;
+    extraGroups = [ "wheel" "networkmanager" "audio" "docker" ];
 
     packages = with pkgs; [
-      htop neofetch zip unzip alacritty rofi
+      htop neofetch zip unzip alacritty rofi imagemagick patchelf
+      gcc m4 gnumake clang cargo rustup python
+      binutils
+      ncmpcpp
+      feh
     ];
   };
 
@@ -100,17 +120,11 @@
      wget
      firefox
      emacs
-     opam
-     ocaml
      pavucontrol
-     python
-     imagemagick
-     discord
-     gcc
-     gnumake
      git
-     htop
-     teams
+     file
+     most
+     pciutils
 ];
 
   # Some programs need SUID wrappers, can be configured further or are
